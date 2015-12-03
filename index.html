@@ -28,14 +28,75 @@
         <p class="lead">Buy our awesome guide on the topic!</p>
 
         <!-- INSERT PAYMENT FORM HERE -->
-        <div><img src="/images/comingsoon.png" alt="Coming Soon" /></div>
-        <!-- END FORM -->
+        <div class="row">
+          <form class="payment-form col-lg-5 collapse" id="payment-form" action="/payment.php" method="POST">
+            <input type="hidden" name="amount" value="4200">
+            <input type="hidden" name="currency" value="EUR">
+            <input type="hidden" name="description" value="Quickstart Payment!!!">
 
-        <a class="btn btn-lg btn-success" href="#" role="button">Get Your "Easy Payments Guide" now for 42€</a>
+            <div id="credit-card-fields">
+              <!-- Embedded credit card frame will load here -->
+            </div>
+
+            <button class='form-control btn btn-success submit-button' type='submit'>Get Your "Easy Payments Guide" now for 42€</button>
+          </form>
+        </div>
+        <!-- END FORM -->
       </div>
 
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="https://bridge.paymill.com/"></script>
+
+    <!-- PAYMILL Code -->
+    <script>
+      PAYMILL_PUBLIC_KEY = "<PAYMILL_PUBLIC_KEY>";
+
+      // Callback for PayFram initialization
+      var payFrameCallback = function (error) {
+        if (error) {
+          // Frame could not be loaded, check error object for reason.
+          console.log(error.apierror, error.message);
+        } else {
+          // Frame was loaded successfully and is ready to be used.
+          console.log("PayFrame successfully loaded");
+          $("#payment-form").show(300);
+        }
+      }
+
+      var submit = function (event) {
+        paymill.createTokenViaFrame({
+          amount_int: 4200,
+          currency: 'EUR'
+        }, function(error, result) {
+          // Handle error or process result.
+          if (error) {
+            // Token could not be created, check error object for reason.
+            console.log(error.apierror, error.message);
+          } else {
+            // Token was created successfully and can be sent to backend.
+            var form = $("#payment-form");
+            var token = result.token;
+            form.append("<input type='hidden' name='token' value='" + token + "'/>");
+            form.get(0).submit();
+          }
+        });
+
+        return false;
+      }
+
+      $(document).ready(function () {
+        paymill.embedFrame('credit-card-fields', {
+          lang: 'en'
+        }, payFrameCallback);
+
+        // Form submit handler
+        $("#payment-form").submit(submit);
+      });
+    </script>
+    <!-- END of PAYMILL code -->
+
   </body>
 </html>

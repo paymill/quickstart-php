@@ -5,3 +5,8 @@ body {
   padding: 40px 15px;
   text-align: center;
 }
+
+.payment-form {
+  float: none;
+  margin: 0 auto;
+}
